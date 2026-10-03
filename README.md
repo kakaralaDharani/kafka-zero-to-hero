@@ -1,225 +1,151 @@
-# Kafka Zero to Hero
+# Kafka Zero to Hero — Hands-On Demo
 
-Beginner-friendly Kafka tutorial content with runnable examples and Docker-based local setup.
+A hands-on Apache Kafka project demonstrating event streaming using **Kafka, Python, Docker Compose, and Kafka UI**.
 
-## What is Kafka?
+## 🛠️ Technologies
 
-Kafka is a distributed event streaming platform. In simple words, it is a system that lets one part of your application publish events and other parts consume those events in real time.
+* Apache Kafka 3.8.0
+* Python
+* Docker & Docker Compose
+* Kafka UI
+* Bash/Shell scripting
+* Git & GitHub
 
-### Simple real-time scenario
+## 🏗️ What I Implemented
 
-Think about a food delivery app:
+* Set up a single-node Kafka cluster using **KRaft mode**.
+* Used Docker Compose to run Kafka and Kafka UI.
+* Automated Kafka startup using a **shell script**.
+* Created Kafka topics programmatically using Python.
+* Implemented a Python Kafka producer for publishing events.
+* Implemented a Python Kafka consumer for consuming events.
+* Worked with:
 
-- A customer places an order.
-- The restaurant dashboard needs that order immediately.
-- The delivery partner app needs updates when the order is ready.
-- The analytics team wants to count orders by city.
+  * Topics
+  * Partitions
+  * Consumer Groups
+  * Offsets
+  * `earliest` / `latest` offset behavior
+* Used Kafka UI to monitor topics and messages.
+* Added Kafka broker health checks.
+* Configured separate internal and external Kafka listeners.
 
-Instead of every service calling every other service directly, the order service can publish an event like `order_created` to Kafka. Every interested system can read that event independently.
+## 🔄 Data Flow
 
-That makes Kafka a central event highway for your data.
-
-## Why Kafka?
-
-Kafka is useful when many systems need the same information at the same time, but for different reasons.
-
-### Same real-time scenario
-
-In the food delivery example, one order event can be used by:
-
-- the restaurant service to start preparing food
-- the delivery system to plan pickup
-- the notification service to send updates to the customer
-- the analytics service to build dashboards
-
-Without Kafka, the order service would need direct integrations with every consumer. That creates tight coupling.
-
-With Kafka:
-
-- producers and consumers stay decoupled
-- multiple consumers can read the same event
-- messages are stored for replay
-- the platform can scale as traffic grows
-
-## Kafka Building Blocks
-
-### Producer
-
-The application that sends data to Kafka.
-
-Example: an order service publishing `order_created` events.
-
-### Topic
-
-A named stream of events.
-
-Example: `orders`, `payments`, `notifications`.
-
-### Partition
-
-Each topic is split into partitions. Partitions allow Kafka to scale and process events in parallel.
-
-Important rule: ordering is guaranteed only inside a single partition.
-
-### Broker
-
-A Kafka server. A Kafka cluster is made of one or more brokers.
-
-### Consumer
-
-An application that reads messages from Kafka.
-
-Example: a notification service reading from the `orders` topic.
-
-### Consumer Group
-
-Multiple consumer instances can share work under one group id.
-
-- same group: messages are divided across consumers
-- different groups: each group gets its own copy of the topic data
-
-### Offset
-
-Every message in a partition has an offset. Kafka uses offsets to track which messages were already read.
-
-## Visual Model
-
-```mermaid
-flowchart LR
-    A[Order Service Producer] --> B[Kafka Topic: orders]
-    B --> C[Restaurant Consumer Group]
-    B --> D[Delivery Consumer Group]
-    B --> E[Analytics Consumer Group]
+```text
+Python Producer
+      ↓
+Kafka Topic
+      ↓
+Partitions
+      ↓
+Python Consumer
+      ↓
+Processed Event
 ```
 
-## Kafka Setup
+## 🚀 Setup
 
-### Prerequisites
+### 1. Clone the repository
 
-- Docker Desktop
-- Python 3.11 or later
+```bash
+git clone <your-repository-url>
+cd kafka-zero-to-hero
+```
 
-### 1. Create a virtual environment
+### 2. Create Python virtual environment
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install --upgrade pip
+```
+
+### 3. Install the project
+
+```bash
 pip install -e .
 ```
 
-### 2. Start Kafka
+### 4. Start Kafka
+
+Kafka and Kafka UI are started through the project's shell script:
 
 ```bash
-./scripts/start-kafka.sh
+./<your-startup-script>
 ```
 
-This starts a single-node Kafka broker on `localhost:9092` using KRaft mode.
+The script starts Docker Compose and verifies the running containers.
 
-Kafka UI is also started and available in the browser at `http://localhost:8080`.
-
-### 3. Stop Kafka
+### 5. Create the topic
 
 ```bash
-./scripts/stop-kafka.sh
-```
-
-## Live Terminal Demo (Recommended For Presentations)
-
-This flow matches how you would explain Kafka in real time:
-
-1. Start Kafka.
-2. Start producer and show events being written.
-3. Start consumer and show near real-time reads.
-
-### Terminal 1: Start Kafka
-
-```bash
-./scripts/start-kafka.sh
-```
-
-Optional browser view:
-
-- Kafka UI: `http://localhost:8080`
-
-### Terminal 2: Create topic once
-
-```bash
-source .venv/bin/activate
 python examples/live_topic_setup.py --topic order-events-live
 ```
 
-### Terminal 3: Start producer
+### 6. Start the producer
+
+Run the project's producer command/script to publish order events.
+
+### 7. Start the consumer
 
 ```bash
-source .venv/bin/activate
-python examples/live_producer.py --topic order-events-live --interval 1
-```
-
-You will see `PRODUCED_EVENT ...` logs continuously.
-
-### Terminal 4: Start consumer
-
-```bash
-source .venv/bin/activate
 python examples/live_consumer.py --topic order-events-live
 ```
 
-You will see `CONSUMED_EVENT ...` logs almost immediately after each produced event.
+Use `--from-beginning` when you want the consumer to read existing messages from the beginning.
 
-Useful options:
+## 🖥️ Four-Terminal Workflow
 
-- Read old events too: `python examples/live_consumer.py --topic order-events-live --from-beginning`
-- Produce a fixed number of events: `python examples/live_producer.py --topic order-events-live --max-events 20`
+| Terminal | Activity                           |
+| -------- | ---------------------------------- |
+| 1        | Start Kafka using the shell script |
+| 2        | Create Kafka topic                 |
+| 3        | Run producer                       |
+| 4        | Run consumer                       |
 
-### What it demonstrates
+## 🔧 Issues Faced & Fixes
 
-- creating a topic
-- publishing JSON events continuously
-- consuming those events continuously
-- seeing near real-time flow from producer to consumer
+### Python project not found
 
-## Challenges with Kafka
+**Issue:** `pip install -e .` failed because it was executed outside the project directory.
 
-Kafka is powerful, but it introduces real engineering challenges.
+**Fix:** Changed to the project root and ran:
 
-### 1. Ordering is not global
-
-Ordering is guaranteed only within a partition, not across the whole topic.
-
-### 2. Duplicate processing can happen
-
-Consumers may process a message more than once, so applications should be idempotent.
-
-### 3. Schema changes need discipline
-
-If event structure changes carelessly, consumers can break.
-
-### 4. Operations become more complex
-
-You need monitoring, alerting, topic planning, retention settings, and capacity planning.
-
-### 5. It can be overkill
-
-For a very small application with simple request-response communication, Kafka may add unnecessary complexity.
-
-## Repo Structure
-
-```text
-.
-├── README.md
-├── compose.yaml
-├── examples
-│   ├── live_consumer.py
-│   ├── live_producer.py
-│   └── live_topic_setup.py
-├── scripts
-│   ├── start-kafka.sh
-│   └── stop-kafka.sh
-├── src
-│   └── kafka_zero_to_hero
-│       ├── __init__.py
-│       └── common.py
+```bash
+pip install -e .
 ```
 
+### Python module not found
 
+**Issue:** `ModuleNotFoundError: No module named 'kafka_zero_to_hero'`
+
+**Fix:** Installed the project in editable mode from the project root:
+
+```bash
+pip install -e .
+```
+
+### Docker daemon not running
+
+**Issue:** Kafka containers could not start because Docker was not running.
+
+**Fix:** Started Docker Desktop and verified Docker with:
+
+```bash
+docker info
+```
+
+## 📸 Screenshots
+
+Add screenshots showing:
+
+1. Kafka containers running
+2. Kafka UI
+3. Topic creation
+4. Producer messages
+5. Consumer output
+6. Kafka messages/partitions in Kafka UI
+
+## 🎯 Key Learning
+
+This project gave me hands-on experience with **Kafka event streaming, Docker-based infrastructure, Python Kafka clients, consumer groups, partitions, offsets, health checks, and container networking**.
