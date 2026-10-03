@@ -161,3 +161,18 @@ docker info
 ## 🎯 Key Learning
 
 This project gave me hands-on experience with **Kafka event streaming, Docker-based infrastructure, Python Kafka clients, consumer groups, partitions, offsets, health checks, and container networking**.
+
+## 🎥 Demo Videos
+
+### Kafka Demo
+
+Complete hands-on Kafka demo covering Kafka setup, topic creation, producer, consumer, Kafka UI, and stopping Kafka.
+
+[Watch Kafka Demo](docs/videos/kafka-demo.mp4)
+
+### Git & GitHub Demo
+
+Demonstration of the Git workflow used to add, commit, and push this project to GitHub.
+
+[Watch Git & GitHub Demo](docs/videos/git-demo.mp4)
+
