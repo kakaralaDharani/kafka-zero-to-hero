@@ -49,7 +49,7 @@ Processed Event
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/kakaralaDharani/kafka-zero-to-hero.git
 cd kafka-zero-to-hero
 ```
 
@@ -66,15 +66,26 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-### 4. Start Kafka
+### 4.0 Start Kafka
 
 Kafka and Kafka UI are started through the project's shell script:
 
 ```bash
-./<your-startup-script>
+./scripts/start-kafka.sh
 ```
 
 The script starts Docker Compose and verifies the running containers.
+
+### 4.1 Access Kafka
+Kafka broker: localhost:9092
+Kafka UI: http://localhost:8080
+Python producer and consumer connected to Kafka using localhost:9092.
+Kafka UI was used to view topics, partitions, messages, and consumer activity.
+
+### 4.2 Check Kafka Containers
+docker compose ps
+
+This was used to verify that Kafka and Kafka UI were running.
 
 ### 5. Create the topic
 
@@ -84,7 +95,9 @@ python examples/live_topic_setup.py --topic order-events-live
 
 ### 6. Start the producer
 
-Run the project's producer command/script to publish order events.
+```bash
+python examples/live_producer.py --topic order-events-live --interval 1
+```
 
 ### 7. Start the consumer
 
@@ -93,6 +106,14 @@ python examples/live_consumer.py --topic order-events-live
 ```
 
 Use `--from-beginning` when you want the consumer to read existing messages from the beginning.
+
+### 8.Stop Kafka
+Kafka was stopped using the project's shell script:
+
+```bash
+./scripts/stop-kafka.sh
+```
+The script stops the Docker Compose services cleanly.
 
 ## 🖥️ Four-Terminal Workflow
 
@@ -135,16 +156,7 @@ pip install -e .
 docker info
 ```
 
-## 📸 Screenshots
 
-Add screenshots showing:
-
-1. Kafka containers running
-2. Kafka UI
-3. Topic creation
-4. Producer messages
-5. Consumer output
-6. Kafka messages/partitions in Kafka UI
 
 ## 🎯 Key Learning
 
